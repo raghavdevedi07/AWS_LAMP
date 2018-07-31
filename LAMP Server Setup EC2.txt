@@ -1,0 +1,48 @@
+[ec2-user ~]$ sudo yum update -y
+[ec2-user ~]$ sudo yum install -y httpd24 php70 mysql56-server php70-mysqlnd
+[ec2-user ~]$ sudo service httpd start
+[ec2-user ~]$ sudo chkconfig httpd on
+[ec2-user ~]$ ls -l /var/www
+[ec2-user ~]$ sudo usermod -a -G apache ec2-user
+[ec2-user ~]$ exit
+[ec2-user ~]$ groups
+[ec2-user ~]$ sudo chown -R ec2-user:apache /var/www
+[ec2-user ~]$ sudo chmod 2775 /var/www
+[ec2-user ~]$ find /var/www -type d -exec sudo chmod 2775 {} \;
+[ec2-user ~]$ find /var/www -type f -exec sudo chmod 0664 {} \;
+
+To test your LAMP web server
+[ec2-user ~]$ echo "<?php phpinfo(); ?>" > /var/www/html/phpinfo.php
+		Browser - http://my.public.dns.amazonaws.com/phpinfo.php
+
+To secure the database server
+[ec2-user ~]$ sudo service mysqld start
+[ec2-user ~]$ sudo mysql_secure_installation
+When prompted, type a password for the root account.
+
+Type the current root password. By default, the root account does not have a password set. Press Enter.
+
+Type Y to set a password, and type a secure password twice. For more information about creating a secure password, see https://identitysafe.norton.com/password-generator/. Make sure to store this password in a safe place.
+
+Note
+
+Setting a root password for MySQL is only the most basic measure for securing your database. When you build or install a database-driven application, you typically create a database service user for that application and avoid using the root account for anything but database administration.
+
+Type Y to remove the anonymous user accounts.
+
+Type Y to disable the remote root login.
+
+Type Y to remove the test database.
+
+Type Y to reload the privilege tables and save your changes.
+
+
+Install phpMyAdmin
+[ec2-user ~]$ sudo yum install php70-mbstring.x86_64 php70-zip.x86_64 -y
+[ec2-user ~]$ sudo service httpd restart
+[ec2-user ~]$ cd /var/www/html
+[ec2-user html]$ wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
+[ec2-user html]$ mkdir phpMyAdmin && tar -xvzf phpMyAdmin-latest-all-languages.tar.gz -C phpMyAdmin --strip-components 1
+[ec2-user html]$ rm phpMyAdmin-latest-all-languages.tar.gz
+[ec2-user ~]$ sudo service mysqld start
+		http://my.public.dns.amazonaws.com/phpMyAdmin
